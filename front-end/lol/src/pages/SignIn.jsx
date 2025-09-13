@@ -1,15 +1,26 @@
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, Alert } from "react-bootstrap";
 import Header from "../components/Header";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function SignIn() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const { signin, loading, error, clearError } = useAuth();
+	const navigate = useNavigate();
 
-	function handleSubmit(e) {
+	async function handleSubmit(e) {
 		e.preventDefault();
-		// TODO: Add authentication logic here
-		alert("Sign in functionality coming soon!");
+		clearError(); // Clear any previous errors
+		
+		const result = await signin({ email, password });
+		
+		if (result.success) {
+			// Redirect to homepage or dashboard after successful login
+			navigate('/');
+		}
+		// Error handling is managed by the auth context
 	}
 
 	return (
@@ -23,18 +34,42 @@ function SignIn() {
 					</section>
 					<div className="col-md-6 col-lg-4">
 						<div className="card shadow-sm border-0 p-4">
+							{error && (
+								<Alert variant="danger" className="mb-3">
+									{error}
+								</Alert>
+							)}
 							<Form onSubmit={handleSubmit}>
 								<Form.Group className="mb-3" controlId="formEmail">
 									<Form.Label>Email address</Form.Label>
-									<Form.Control type="email" placeholder="Enter email" value={email} onChange={e => setEmail(e.target.value)} required />
+									<Form.Control 
+										type="email" 
+										placeholder="Enter email" 
+										value={email} 
+										onChange={e => setEmail(e.target.value)} 
+										required 
+										disabled={loading}
+									/>
 								</Form.Group>
 								<Form.Group className="mb-3" controlId="formPassword">
 									<Form.Label>Password</Form.Label>
-									<Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+									<Form.Control 
+										type="password" 
+										placeholder="Password" 
+										value={password} 
+										onChange={e => setPassword(e.target.value)} 
+										required 
+										disabled={loading}
+									/>
 								</Form.Group>
 								<div className="d-grid gap-2 mt-3">
-									<Button variant="primary" type="submit" style={{ background: '#457b9d', border: 'none' }}>
-										Sign In
+									<Button 
+										variant="primary" 
+										type="submit" 
+										style={{ background: '#457b9d', border: 'none' }}
+										disabled={loading}
+									>
+										{loading ? 'Signing In...' : 'Sign In'}
 									</Button>                                    
 								</div>
                                 <center>
