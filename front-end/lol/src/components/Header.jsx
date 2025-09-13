@@ -1,4 +1,5 @@
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 function Header() {
     return (
@@ -10,9 +11,9 @@ function Header() {
                 <Navbar.Toggle aria-controls="main-navbar-nav" />
                 <Navbar.Collapse id="main-navbar-nav">
                     <Nav className="ms-auto">
-                        <Nav.Link href="#" style={{ fontWeight: 500 }}>Home</Nav.Link>
-                        <Nav.Link href="#features" style={{ fontWeight: 500 }}>Features</Nav.Link>
-                        <Nav.Link href="#" style={{ fontWeight: 500 }}>Sign Up</Nav.Link>
+                        <Link to={"/"} style={{ fontWeight: 500 }}>Home</Link>
+                        <Link to={"/create-plan"} style={{ fontWeight: 500 }}>Create a plan</Link>
+                        <Link href="#" style={{ fontWeight: 500 }}>Sign Up</Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>
