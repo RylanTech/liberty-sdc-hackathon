@@ -13,7 +13,7 @@ function AddLocationModal(props) {
     const [query, setQuery] = useState("")
     const debounceTimeout = useRef(null);
 
-    const { fetchSuggestions, yelpLocations } = useContext(DestinationContext)
+    const { fetchSuggestions, yelpLocations, yelpLoading } = useContext(DestinationContext)
 
     // Update destination when props change
     useEffect(() => {
@@ -48,8 +48,9 @@ function AddLocationModal(props) {
         }
         debounceTimeout.current = setTimeout(async () => {
             let locations = await yelpLocations(destination, query)
-            setYelpLocationsList(locations.data.results)
+            setYelpLocationsList(locations.data.data.results)
             console.log(locations.data)
+            console.log(locations.data.results)
         }, 500);
 
     }
@@ -119,6 +120,40 @@ function AddLocationModal(props) {
                             </Button>
                         </div>
 
+                        {yelpLoading ? (
+                            <div className="col-12 text-center mb-3">
+                                {/* Animated Dial Loader */}
+                                <div style={{
+                                    display: 'inline-block',
+                                    width: 48,
+                                    height: 48,
+                                    position: 'relative'
+                                }}>
+                                    <div style={{
+                                        boxSizing: 'border-box',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        width: 48,
+                                        height: 48,
+                                        border: '6px solid #0d6efd',
+                                        borderRadius: '50%',
+                                        borderTopColor: 'transparent',
+                                        animation: 'spin-dial 1s linear infinite'
+                                    }} />
+                                    <style>
+                                        {`
+                                            @keyframes spin-dial {
+                                                0% { transform: rotate(0deg);}
+                                                100% { transform: rotate(360deg);}
+                                            }
+                                        `}
+                                    </style>
+                                </div>
+                            </div>
+                        ) : (
+                            <></>
+                        )}
+
                         {yelpLocationsList.length > 0 && (
                             <div className="col-12">
                                 <h5>Locations</h5>
@@ -149,7 +184,7 @@ function AddLocationModal(props) {
                                                         {loc.website && (
                                                             <div>
                                                                 <a href={loc.website} target="_blank" rel="noopener noreferrer">
-                                                                    Website
+                                                                    {loc.website}
                                                                 </a>
                                                             </div>
                                                         )}
@@ -164,7 +199,7 @@ function AddLocationModal(props) {
                                                     <Button
                                                         variant="success"
                                                         size="sm"
-                                                        onClick={(loc) => {
+                                                        onClick={() => {
                                                             addToTrip(loc)
                                                         }}
                                                     >
@@ -181,9 +216,6 @@ function AddLocationModal(props) {
                     </Row>
                 </Container>
             </Modal.Body>
-            <Modal.Footer>
-                <Button>Close</Button>
-            </Modal.Footer>
         </Modal>
     );
 }

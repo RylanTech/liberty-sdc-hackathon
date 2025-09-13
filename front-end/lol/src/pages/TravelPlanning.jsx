@@ -502,7 +502,17 @@ function TravelPlanning() {
                                                                 >
                                                                     <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{biz.name}</Card.Title>
                                                                     <Card.Text style={{ fontSize: 16 }}>
-                                                                        <strong>Address:</strong> {biz.address || 'N/A'}<br />
+                                                                        {biz.address ? (
+                                                                            <><strong>Address:</strong> <br /></>
+                                                                        ) : (
+                                                                            <></>
+                                                                        )}
+                                                                        {biz.website ? (
+                                                                            <><strong>Website:</strong> <a href={biz.website} target="_blank">{biz.website}</a> <br /></>
+                                                                        ) : (
+                                                                            <></>
+                                                                        )}
+                                                                        
                                                                         <strong>Phone:</strong> {biz.phone || 'N/A'}<br />
                                                                         <strong>Category:</strong> {Array.isArray(biz.categories) ? biz.categories.join(', ') : biz.categories || 'N/A'}
                                                                     </Card.Text>

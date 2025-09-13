@@ -9,6 +9,7 @@ export const DestinationContext = createContext();
 export function DestinationProvider({ children }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [yelpLoading, setYelpLoading] = useState()
 
     const fetchSuggestions = async (input) => {
         setLoading(true);
@@ -37,6 +38,8 @@ export function DestinationProvider({ children }) {
 
 
     async function yelpLocations(location, query) {
+        setYelpLoading(true);
+        setError(null);
         const options = {
             method: 'GET',
             url: 'https://yelp-business-reviews.p.rapidapi.com/search',
@@ -52,9 +55,12 @@ export function DestinationProvider({ children }) {
 
         try {
             const response = await axios.request(options);
-            return response
+            return { loading: false, data: response };
         } catch (error) {
-            console.error(error);
+            setError(error);
+            return { loading: false, error };
+        } finally {
+            setYelpLoading(false);
         }
     }
 
@@ -119,7 +125,7 @@ export function DestinationProvider({ children }) {
     }
 
     return (
-        <DestinationContext.Provider value={{ loading, error, fetchSuggestions, yelpLocations, saveTripDestination }}>
+        <DestinationContext.Provider value={{ loading, error, fetchSuggestions, yelpLocations, saveTripDestination, yelpLoading }}>
             {children}
         </DestinationContext.Provider>
     );
