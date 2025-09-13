@@ -54,12 +54,6 @@ const DayLocation = sequelize.define('DayLocation', {
 }, {
   timestamps: true,
   tableName: 'day_locations',
-  indexes: [
-    {
-      unique: true,
-      fields: ['tripId', 'dayNumber'],
-    },
-  ],
 });
 
 module.exports = DayLocation;

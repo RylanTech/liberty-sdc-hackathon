@@ -49,17 +49,40 @@ const createTrip = async (req, res) => {
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include both start and end days
 
+    console.log(`Creating day locations for trip ${trip.id}, days: ${diffDays}`);
+
     const dayLocations = [];
     for (let day = 1; day <= diffDays; day++) {
-      const dayLocation = await DayLocation.create({
-        tripId: trip.id,
-        dayNumber: day,
-        location: day === 1 ? destination : null, // First day defaults to main destination
-        placeId: day === 1 ? placeId : null,
-        activities: [],
-        order: day
-      });
-      dayLocations.push(dayLocation);
+      try {
+        console.log(`Attempting to create day location ${day} for trip ${trip.id}`);
+        
+        // Check if day location already exists to avoid duplicates
+        const existingDayLocation = await DayLocation.findOne({
+          where: {
+            tripId: trip.id,
+            dayNumber: day
+          }
+        });
+
+        if (!existingDayLocation) {
+          const dayLocation = await DayLocation.create({
+            tripId: trip.id,
+            dayNumber: day,
+            location: day === 1 ? destination : null, // First day defaults to main destination
+            placeId: day === 1 ? placeId : null,
+            activities: [],
+            order: day
+          });
+          console.log(`Successfully created day location ${day} for trip ${trip.id}`);
+          dayLocations.push(dayLocation);
+        } else {
+          console.log(`Day location ${day} already exists for trip ${trip.id}`);
+          dayLocations.push(existingDayLocation);
+        }
+      } catch (dayError) {
+        console.error(`Error creating day location ${day} for trip ${trip.id}:`, dayError);
+        // Continue with other days instead of failing completely
+      }
     }
 
     // Fetch the complete trip with day locations

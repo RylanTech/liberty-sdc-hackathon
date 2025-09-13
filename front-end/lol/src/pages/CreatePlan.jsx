@@ -175,7 +175,7 @@ function CreatePlan() {
             if (response.data && response.data.trip) {
                 console.log('Trip created successfully:', response.data.trip);
                 // Navigate to travel planning with the trip data
-                navigate("/travel-planing", { 
+                navigate("/travel-planning", { 
                     state: { 
                         ...tripData, 
                         tripId: response.data.trip.id,

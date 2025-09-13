@@ -45,7 +45,7 @@ function Homepage() {
                     </section>
                     <section className="text-center mt-5">
                         <h2 style={{ color: '#2d3a4b', fontWeight: 600 }}>Ready to start your journey?</h2>
-                        <a href="#" className="btn btn-success btn-lg mt-3" style={{ background: '#1abc9c', border: 'none' }}>Sign Up Now</a>
+                        <a href="/signup" className="btn btn-success btn-lg mt-3" style={{ background: '#1abc9c', border: 'none' }}>Sign Up Now</a>
                     </section>
                 </Container>
             </main>
