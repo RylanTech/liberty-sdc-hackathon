@@ -1,7 +1,34 @@
-import { Container } from "react-bootstrap"
+import { Container, Form, Row } from "react-bootstrap"
 import Header from "../components/Header"
+import { DestinationContext } from "../context/DestinationContext";
+import { useContext, useState, useRef } from "react";
 
 function CreatePlan() {
+    const [destination, setDestination] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+    const { fetchSuggestions } = useContext(DestinationContext);
+    const debounceTimeout = useRef(null);
+
+
+    function searchDestinations(e) {
+        const value = e.target.value;
+        setDestination(value);
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+        debounceTimeout.current = setTimeout(async () => {
+            if (value.trim()) {
+                let desti = await fetchSuggestions(value);
+                setSuggestions(desti.data.predictions || []);
+            }
+        }, 500);
+    }
+
+
+
+    const today = new Date().toISOString().split('T')[0];
+    const [fromDate, setFromDate] = useState("");
+
     return (
         <>
             <Header />
@@ -20,11 +47,39 @@ function CreatePlan() {
                                 <form>
                                     <div className="mb-3">
                                         <label htmlFor="destination" className="form-label">Destination</label>
-                                        <input type="text" className="form-control" id="destination" placeholder="Where do you want to go?" />
+                                        <Form.Control type="text"
+                                            value={destination}
+                                            onChange={(e) => searchDestinations(e)}
+                                            onBlur={() => setTimeout(() => setSuggestions([]), 100)}
+                                            id="destination"
+                                            placeholder="Where do you want to go?" />
+                                        {suggestions.length > 0 && (
+                                            <ul className="list-group position-absolute" style={{ zIndex: 1000, width: '100%' }}>
+                                                {suggestions.map((suggestion) => (
+                                                    <li key={suggestion.place_id} className="list-group-item list-group-item-action" onClick={() => { setDestination(suggestion.description); setSuggestions([]); }}>
+                                                        {suggestion.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="dates" className="form-label">Travel Dates</label>
-                                        <input type="text" className="form-control" id="dates" placeholder="e.g. 2025-09-20 to 2025-09-27" />
+                                        <Row>
+                                            <div className="col-6">
+                                                From
+                                                <Form.Control
+                                                    type="date"
+                                                    min={today}
+                                                    value={fromDate}
+                                                    onChange={e => setFromDate(e.target.value)}
+                                                />   
+                                            </div>
+                                            <div className="col-6">
+                                                To
+                                                <Form.Control type="date" min={fromDate || today} />
+                                            </div>
+                                        </Row>
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="travelers" className="form-label">Number of Travelers</label>

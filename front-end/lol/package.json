@@ -13,6 +13,7 @@
     "@firebase/auth": "^1.11.0",
     "axios": "^1.12.1",
     "bootstrap": "^5.3.8",
+    "dotenv": "^17.2.2",
     "firebase": "^12.2.1",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",
