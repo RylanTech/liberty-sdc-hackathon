@@ -26,7 +26,7 @@ export function DestinationProvider({ children }) {
         };
         try {
             const response = await axios.request(options);
-            console.log(xRapidAPIKey);
+            console.log(response);
             return response;
         } catch (err) {
             setError(err);

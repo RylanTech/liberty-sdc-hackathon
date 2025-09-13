@@ -6,6 +6,9 @@ import { useContext, useState, useRef } from "react";
 function CreatePlan() {
     const [destination, setDestination] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [numberOfTravelers, setNumberOfTravelers] = useState(1);
     const { fetchSuggestions } = useContext(DestinationContext);
     const debounceTimeout = useRef(null);
 
@@ -24,10 +27,7 @@ function CreatePlan() {
         }, 500);
     }
 
-
-
     const today = new Date().toISOString().split('T')[0];
-    const [fromDate, setFromDate] = useState("");
 
     return (
         <>
@@ -64,34 +64,36 @@ function CreatePlan() {
                                         )}
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="dates" className="form-label">Travel Dates</label>
                                         <Row>
                                             <div className="col-6">
                                                 From
                                                 <Form.Control
                                                     type="date"
                                                     min={today}
-                                                    value={fromDate}
-                                                    onChange={e => setFromDate(e.target.value)}
-                                                />   
+                                                    value={startDate}
+                                                    onChange={e => setStartDate(e.target.value)}
+                                                />
                                             </div>
                                             <div className="col-6">
                                                 To
-                                                <Form.Control type="date" min={fromDate || today} />
+                                                <Form.Control type="date"
+                                                    min={startDate || today}
+                                                    value={endDate}
+                                                    onChange={e => setEndDate(e.target.value)}
+                                                />
                                             </div>
                                         </Row>
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="travelers" className="form-label">Number of Travelers</label>
-                                        <input type="number" className="form-control" id="travelers" min="1" placeholder="1" />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="interests" className="form-label">Interests & Activities</label>
-                                        <input type="text" className="form-control" id="interests" placeholder="e.g. hiking, museums, food tours" />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="notes" className="form-label">Special Notes</label>
-                                        <textarea className="form-control" id="notes" rows="2" placeholder="Anything else?" />
+                                        <input
+                                            type="number"
+                                            value={numberOfTravelers}
+                                            onCHhnge={e => setNumberOfTravelers(e.target.value)}
+                                            className="form-control"
+                                            id="travelers"
+                                            min="1"
+                                        />
                                     </div>
                                     <div className="d-grid gap-2 mt-4">
                                         <button type="submit" className="btn btn-primary btn-lg" style={{ background: '#457b9d', border: 'none' }}>
