@@ -40,6 +40,10 @@ function Header() {
                                         Signed in as {user?.email}
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
+                                    <Dropdown.Item href="/travel-planning">
+                                        Travel Planning
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
                                     <Dropdown.Item onClick={handleSignOut}>
                                         Sign Out
                                     </Dropdown.Item>

@@ -22,6 +22,7 @@ function CreatePlan() {
     const [destination, setDestination] = useState("");
     const [placeId, setPlaceId] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [numberOfTravelers, setNumberOfTravelers] = useState(1);
@@ -116,6 +117,10 @@ function CreatePlan() {
             if (value.trim()) {
                 let desti = await fetchSuggestions(value);
                 setSuggestions(desti.data.predictions || []);
+                setShowSuggestions(true);
+            } else {
+                setSuggestions([]);
+                setShowSuggestions(false);
             }
         }, 500);
     }
@@ -126,6 +131,7 @@ function CreatePlan() {
     const handleDestinationSelect = (suggestion) => {
         setDestination(suggestion.description);
         setSuggestions([]);
+        setShowSuggestions(false);
         setPlaceId(suggestion.place_id);
         
         console.log('Selected destination:', suggestion.description, 'Place ID:', suggestion.place_id);
@@ -240,7 +246,12 @@ function CreatePlan() {
                                             <Form.Control type="text"
                                                 value={destination}
                                                 onChange={(e) => searchDestinations(e)}
-                                                onBlur={() => setTimeout(() => setSuggestions([]), 100)}
+                                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                                onFocus={() => {
+                                                    if (suggestions.length > 0) {
+                                                        setShowSuggestions(true);
+                                                    }
+                                                }}
                                                 id="destination"
                                                 placeholder="Where do you want to go?" />
                                             {imageLoading && (
@@ -251,13 +262,16 @@ function CreatePlan() {
                                                 </div>
                                             )}
                                         </div>
-                                        {suggestions.length > 0 && (
+                                        {suggestions.length > 0 && showSuggestions && (
                                             <ul className="list-group position-absolute" style={{ zIndex: 1000, width: '100%' }}>
                                                 {suggestions.map((suggestion) => (
                                                     <li 
                                                         key={suggestion.place_id} 
                                                         className="list-group-item list-group-item-action" 
-                                                        onClick={() => handleDestinationSelect(suggestion)}
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault(); // Prevent input blur
+                                                            handleDestinationSelect(suggestion);
+                                                        }}
                                                         style={{ cursor: 'pointer' }}
                                                     >
                                                         {suggestion.description}

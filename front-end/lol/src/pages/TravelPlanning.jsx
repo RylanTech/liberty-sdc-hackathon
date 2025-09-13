@@ -99,6 +99,56 @@ function TravelPlanning() {
         setShowTripSelectModal(false);
         setLoading(false);
     };
+
+    // Function to delete a trip
+    const deleteTrip = async (tripId, event) => {
+        event.stopPropagation(); // Prevent triggering the card click event
+        
+        if (!window.confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.log('No token found, redirecting to sign-in');
+                navigate("/sign-in");
+                return;
+            }
+
+            const response = await axios.delete(`http://localhost:3001/trips/${tripId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.status === 200) {
+                // Remove the deleted trip from the local state
+                const updatedTrips = userTrips.filter(trip => trip.id !== tripId);
+                setUserTrips(updatedTrips);
+
+                // If this was the last trip, close modal and redirect to create-plan
+                if (updatedTrips.length === 0) {
+                    setShowTripSelectModal(false);
+                    navigate("/create-plan");
+                } else if (updatedTrips.length === 1) {
+                    // If only one trip left, load it automatically
+                    loadTrip(updatedTrips[0]);
+                }
+                // If multiple trips remain, keep the modal open
+            }
+        } catch (error) {
+            console.error('Error deleting trip:', error);
+            if (error.response?.status === 401) {
+                console.log('Token expired or invalid, redirecting to sign-in');
+                localStorage.removeItem('token');
+                navigate("/sign-in");
+            } else {
+                alert('Failed to delete trip. Please try again.');
+            }
+        }
+    };
     
     useEffect(() => {
         const initializePage = async () => {
@@ -173,7 +223,17 @@ function TravelPlanning() {
     return (
         <>
             <Header />
-            <AddLocationModal show={modalShow} onHide={() => setModalShow(false)} />
+            <AddLocationModal 
+                show={modalShow} 
+                onHide={() => setModalShow(false)}
+                defaultDestination={destination}
+                tripId={trip?.id}
+                onAddToTrip={(location) => {
+                    // Handle adding location to trip
+                    console.log('Adding location to trip:', location);
+                    // You can implement the logic to save this to the backend here
+                }}
+            />
             
             {/* Trip Selection Modal */}
             <Modal show={showTripSelectModal} onHide={() => setShowTripSelectModal(false)} size="lg" centered>
@@ -195,7 +255,8 @@ function TravelPlanning() {
                                         style={{ 
                                             cursor: 'pointer',
                                             transition: 'transform 0.2s, box-shadow 0.2s',
-                                            border: '2px solid transparent'
+                                            border: '2px solid transparent',
+                                            position: 'relative'
                                         }}
                                         onClick={() => loadTrip(userTrip)}
                                         onMouseEnter={(e) => {
@@ -207,6 +268,32 @@ function TravelPlanning() {
                                             e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
                                         }}
                                     >
+                                        {/* Delete button in top-right corner */}
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            style={{
+                                                position: 'absolute',
+                                                top: '10px',
+                                                right: '10px',
+                                                zIndex: 10,
+                                                width: '30px',
+                                                height: '30px',
+                                                borderRadius: '50%',
+                                                padding: '0',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '12px',
+                                                backgroundColor: 'rgba(220, 53, 69, 0.9)',
+                                                border: 'none',
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                                            }}
+                                            onClick={(e) => deleteTrip(userTrip.id, e)}
+                                            title="Delete trip"
+                                        >
+                                            ×
+                                        </Button>
                                         {userTrip.backgroundImage && (
                                             <div style={{ height: '150px', overflow: 'hidden', borderRadius: '15px 15px 0 0' }}>
                                                 <Card.Img
