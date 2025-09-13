@@ -64,7 +64,7 @@ function CreatePlan() {
                                         )}
                                     </div>
                                     <div className="mb-3">
-                                        <Row>
+                                      <Row>
                                             <div className="col-6">
                                                 From
                                                 <Form.Control
