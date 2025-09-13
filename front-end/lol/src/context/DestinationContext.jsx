@@ -58,8 +58,68 @@ export function DestinationProvider({ children }) {
         }
     }
 
+    async function addLocationToTrip(location) {
+        const options = {
+            method: 'POST',
+            url: 'http://localhost:3001/',
+            body: {
+                location
+            },
+            // headers: {
+            //     '': ,
+            // }
+        };
+
+        try {
+            const response = await axios.request(options);
+            return response
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    
+    async function removeLocationFromTrip(location) {
+        const options = {
+            method: 'DELETE',
+            url: 'http://localhost:3001/',
+            body: {
+                location
+            },
+            // headers: {
+            //     '': ,
+            // }
+        };
+
+        try {
+            const response = await axios.request(options);
+            return response
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function saveTripDestination(tripId, destination) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `http://localhost:3001/trips/${tripId}/destination`,
+                { destination },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            setError(error);
+            throw error;
+        }
+    }
+
     return (
-        <DestinationContext.Provider value={{ loading, error, fetchSuggestions, yelpLocations }}>
+        <DestinationContext.Provider value={{ loading, error, fetchSuggestions, yelpLocations, saveTripDestination }}>
             {children}
         </DestinationContext.Provider>
     );

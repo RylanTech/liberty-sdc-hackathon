@@ -61,6 +61,10 @@ function AddLocationModal(props) {
         setShowSuggestions(false);
     };
 
+    function addToTrip(location) {
+        
+    }
+
     return (
         <Modal {...props} size='lg' aria-labelledby="contained-modal-title-vcenter">
             <Modal.Header closeButton>
@@ -160,7 +164,9 @@ function AddLocationModal(props) {
                                                     <Button
                                                         variant="success"
                                                         size="sm"
-                                                        onClick={() => props.onAddToTrip && props.onAddToTrip(loc)}
+                                                        onClick={(loc) => {
+                                                            addToTrip(loc)
+                                                        }}
                                                     >
                                                         Add to Trip
                                                     </Button>

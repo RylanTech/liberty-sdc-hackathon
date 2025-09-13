@@ -51,8 +51,7 @@ function Header() {
                             </Dropdown>
                         ) : (
                             <>
-                                <Link to={"/sign-in"} style={{ fontWeight: 500 }}>Sign In</Link>
-                                <Link to={"/sign-up"} style={{ fontWeight: 500 }}>Sign Up</Link>
+                                <Link className='btn btn-primary' to={"/sign-up"} style={{ fontWeight: 500 }}>Sign Up</Link>
                             </>
                         )}
                     </Nav>

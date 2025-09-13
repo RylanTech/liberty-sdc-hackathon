@@ -42,29 +42,50 @@ function getDaysArray(start, end) {
 //     }
 // ];
 
-    const dummyBusiness = [ {
-        "bizId": "4UA5jW1nm37ps-u5cx1Zng",
-        "name": "Monowi Tavern",
-        "alias": "monowi-tavern-lynch",
-        "serviceArea": null,
-        "lat": 42.82877457,
-        "lon": -98.32962631,
-        "rating": 4.9,
-        "reviewCount": 14,
-        "categories": [
-            "Burgers",
-            "Beer Bars",
-            "Sandwiches"
-        ],
-        "services": [],
-        "businessHighlights": [],
-        "priceRange": "$",
-        "phone": "(402) 569-3600",
-        "website": null,
-        "images": [
-            "https://s3-media0.fl.yelpcdn.com/bphoto/YFAVH-J-UPFYhNwAYDt06w/348s.jpg"
-        ]
-    }]
+const dummyBusiness = [{
+    "bizId": "4UA5jW1nm37ps-u5cx1Zng",
+    "name": "Monowi Tavern",
+    "alias": "monowi-tavern-lynch",
+    "serviceArea": null,
+    "lat": 42.82877457,
+    "lon": -98.32962631,
+    "rating": 4.9,
+    "reviewCount": 14,
+    "categories": [
+        "Burgers",
+        "Beer Bars",
+        "Sandwiches"
+    ],
+    "services": [],
+    "businessHighlights": [],
+    "priceRange": "$",
+    "phone": "(402) 569-3600",
+    "website": null,
+    "images": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/YFAVH-J-UPFYhNwAYDt06w/348s.jpg"
+    ]
+},
+{
+    "bizId": "LLoUJYSiKrpnLsYQ-Z16Yg",
+    "name": "Theatre IV",
+    "alias": "theatre-iv-richmond",
+    "serviceArea": null,
+    "lat": 37.5467778,
+    "lon": -77.443148,
+    "rating": 4.5,
+    "reviewCount": 2,
+    "categories": [
+        "Theatres"
+    ],
+    "services": [],
+    "businessHighlights": [],
+    "priceRange": null,
+    "phone": "(804) 282-2620",
+    "website": "http://va-rep.org/november.html",
+    "images": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/A9qKeQugrIvuPCacLKx82w/348s.jpg"
+    ]
+}]
 
 
 function TravelPlanning() {
@@ -125,11 +146,11 @@ function TravelPlanning() {
         setShowTripSelectModal(false);
         setLoading(false);
     };
-  
+
     // Function to delete a trip
     const deleteTrip = async (tripId, event) => {
         event.stopPropagation(); // Prevent triggering the card click event
-        
+
         if (!window.confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
             return;
         }
@@ -175,7 +196,7 @@ function TravelPlanning() {
             }
         }
     };
-    
+
     useEffect(() => {
         const initializePage = async () => {
             console.log('TravelPlanning - Initializing page...');
@@ -249,8 +270,8 @@ function TravelPlanning() {
     return (
         <>
             <Header />
-            <AddLocationModal 
-                show={modalShow} 
+            <AddLocationModal
+                show={modalShow}
                 onHide={() => setModalShow(false)}
                 defaultDestination={destination}
                 tripId={trip?.id}
@@ -260,7 +281,7 @@ function TravelPlanning() {
                     // You can implement the logic to save this to the backend here
                 }}
             />
-            
+
             {/* Trip Selection Modal */}
             <Modal show={showTripSelectModal} onHide={() => setShowTripSelectModal(false)} size="lg" centered>
                 <Modal.Header closeButton style={{ borderBottom: '1px solid #e0e0e0' }}>
