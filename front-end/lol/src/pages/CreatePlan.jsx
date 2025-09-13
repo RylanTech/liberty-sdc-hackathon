@@ -6,6 +6,8 @@ import { useContext, useState, useRef } from "react";
 function CreatePlan() {
     const [destination, setDestination] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const { fetchSuggestions } = useContext(DestinationContext);
     const debounceTimeout = useRef(null);
 
@@ -24,10 +26,7 @@ function CreatePlan() {
         }, 500);
     }
 
-
-
     const today = new Date().toISOString().split('T')[0];
-    const [fromDate, setFromDate] = useState("");
 
     return (
         <>
@@ -71,13 +70,17 @@ function CreatePlan() {
                                                 <Form.Control
                                                     type="date"
                                                     min={today}
-                                                    value={fromDate}
-                                                    onChange={e => setFromDate(e.target.value)}
+                                                    value={startDate}
+                                                    onChange={e => setStartDate(e.target.value)}
                                                 />   
                                             </div>
                                             <div className="col-6">
                                                 To
-                                                <Form.Control type="date" min={fromDate || today} />
+                                                <Form.Control type="date" 
+                                                min={startDate || today}
+                                                value={endDate}
+                                                onChange={e => setEndDate(e.target.value)} 
+                                                />
                                             </div>
                                         </Row>
                                     </div>
