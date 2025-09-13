@@ -1,10 +1,11 @@
-import { Container, Form, Row } from "react-bootstrap"
+import { Button, Container, Form, Row } from "react-bootstrap"
 import Header from "../components/Header"
 import { DestinationContext } from "../context/DestinationContext";
 import { useContext, useState, useRef } from "react";
 
 function CreatePlan() {
     const [destination, setDestination] = useState("");
+    const [placeId, setPlaceId] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -27,6 +28,15 @@ function CreatePlan() {
         }, 500);
     }
 
+    function handleSubmit() {
+        let planDetails = {
+            destination,
+            startDate,
+            endDate,
+            numberOfTravelers
+        }
+        console.log(planDetails);
+    }
     const today = new Date().toISOString().split('T')[0];
 
     return (
@@ -56,7 +66,7 @@ function CreatePlan() {
                                         {suggestions.length > 0 && (
                                             <ul className="list-group position-absolute" style={{ zIndex: 1000, width: '100%' }}>
                                                 {suggestions.map((suggestion) => (
-                                                    <li key={suggestion.place_id} className="list-group-item list-group-item-action" onClick={() => { setDestination(suggestion.description); setSuggestions([]); }}>
+                                                    <li key={suggestion.place_id} className="list-group-item list-group-item-action" onClick={() => { setDestination(suggestion.description); setSuggestions([]); setPlaceId(suggestion.place_id); }}>
                                                         {suggestion.description}
                                                     </li>
                                                 ))}
@@ -64,7 +74,7 @@ function CreatePlan() {
                                         )}
                                     </div>
                                     <div className="mb-3">
-                                      <Row>
+                                        <Row>
                                             <div className="col-6">
                                                 From
                                                 <Form.Control
@@ -89,16 +99,16 @@ function CreatePlan() {
                                         <input
                                             type="number"
                                             value={numberOfTravelers}
-                                            onCHhnge={e => setNumberOfTravelers(e.target.value)}
+                                            onChange={e => setNumberOfTravelers(e.target.value)}
                                             className="form-control"
                                             id="travelers"
                                             min="1"
                                         />
                                     </div>
                                     <div className="d-grid gap-2 mt-4">
-                                        <button type="submit" className="btn btn-primary btn-lg" style={{ background: '#457b9d', border: 'none' }}>
+                                        <Button onClick={handleSubmit()} className="btn btn-primary btn-lg" style={{ background: '#457b9d', border: 'none' }}>
                                             Start Planning ✈️
-                                        </button>
+                                        </Button>
                                     </div>
                                 </form>
                             </div>
