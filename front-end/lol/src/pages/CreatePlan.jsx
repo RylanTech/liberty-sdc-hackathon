@@ -2,6 +2,8 @@ import { Button, Container, Form, Row } from "react-bootstrap"
 import Header from "../components/Header"
 import { DestinationContext } from "../context/DestinationContext";
 import { useContext, useState, useRef } from "react";
+import { UserContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 function CreatePlan() {
     const [destination, setDestination] = useState("");
@@ -13,6 +15,8 @@ function CreatePlan() {
     const { fetchSuggestions } = useContext(DestinationContext);
     const debounceTimeout = useRef(null);
 
+
+    const { logedInStatus } = useContext(UserContext);
 
     function searchDestinations(e) {
         const value = e.target.value;
@@ -28,6 +32,9 @@ function CreatePlan() {
         }, 500);
     }
 
+    let navigate = useNavigate();
+
+
     function handleSubmit() {
         let planDetails = {
             destination,
@@ -36,6 +43,13 @@ function CreatePlan() {
             numberOfTravelers
         }
         console.log(planDetails);
+
+        if (!logedInStatus) {
+            navigate("/sign-up");
+        } else {
+            navigate("travel-planing")
+        }
+
     }
     const today = new Date().toISOString().split('T')[0];
 

@@ -4,11 +4,14 @@ import './index.css'
 import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { DestinationProvider } from './context/DestinationContext.jsx'
+import { UserProvider } from './context/UserContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <DestinationProvider>
+    <UserProvider>
+      <DestinationProvider>
       <App />
     </DestinationProvider>
+    </UserProvider>
   </StrictMode>,
 )
