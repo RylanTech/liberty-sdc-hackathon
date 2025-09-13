@@ -139,7 +139,8 @@ function CreatePlan() {
             startDate,
             endDate,
             numberOfTravelers,
-            placeId
+            placeId,
+            backgroundImage
         }
         console.log('Plan Details:', planDetails);
         console.log('Is Authenticated:', isAuthenticated);
@@ -149,10 +150,51 @@ function CreatePlan() {
             console.log('User not authenticated, redirecting to sign-up');
             navigate("/sign-up");
         } else {
-            console.log('User authenticated, proceeding to travel planning');
-            navigate("/travel-planing", { state: planDetails });
+            console.log('User authenticated, creating trip...');
+            createTrip(planDetails);
         }
     }
+
+    // Function to create a trip
+    const createTrip = async (tripData) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No authentication token found');
+                navigate("/sign-up");
+                return;
+            }
+
+            const response = await axios.post('http://localhost:3001/trips', tripData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.data && response.data.trip) {
+                console.log('Trip created successfully:', response.data.trip);
+                // Navigate to travel planning with the trip data
+                navigate("/travel-planing", { 
+                    state: { 
+                        ...tripData, 
+                        tripId: response.data.trip.id,
+                        trip: response.data.trip 
+                    } 
+                });
+            }
+        } catch (error) {
+            console.error('Error creating trip:', error);
+            if (error.response?.status === 401) {
+                // Token might be expired or invalid
+                localStorage.removeItem('token');
+                navigate("/sign-up");
+            } else {
+                // Handle other errors (show user-friendly message)
+                alert('Failed to create trip. Please try again.');
+            }
+        }
+    };
     const today = new Date().toISOString().split('T')[0];
 
     // Dynamic background style

@@ -1,6 +1,7 @@
 import { Container, Card, Row, Col } from "react-bootstrap";
 import Header from "../components/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import AddLocationModal from "../components/AddLocationModal";
 
 // Helper to generate days between two dates
@@ -40,64 +41,130 @@ const samplePlaces = [
 ];
 
 function TravelPlanning() {
+    const location = useLocation();
     const [modalShow, setModalShow] = useState(false);
-    const [startDate] = useState("2025-09-20");
-    const [endDate] = useState("2025-09-22");
-    const days = getDaysArray(startDate, endDate);
+    const [trip, setTrip] = useState(null);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [destination, setDestination] = useState("");
+    const [backgroundImage, setBackgroundImage] = useState("");
+    
+    useEffect(() => {
+        if (location.state) {
+            const { trip: tripData, startDate: start, endDate: end, destination: dest, backgroundImage: bgImg } = location.state;
+            setTrip(tripData);
+            setStartDate(start || "2025-09-20");
+            setEndDate(end || "2025-09-22");
+            setDestination(dest || "Unknown Destination");
+            setBackgroundImage(bgImg || "");
+            console.log('Trip data received:', tripData);
+        }
+    }, [location.state]);
+
+    const days = startDate && endDate ? getDaysArray(startDate, endDate) : [];
+
+    // Dynamic background style similar to CreatePlan
+    const mainStyle = {
+        background: backgroundImage 
+            ? `linear-gradient(rgba(224, 234, 252, 0.85), rgba(253, 246, 227, 0.85)), url(${backgroundImage})`
+            : 'linear-gradient(135deg, #e0eafc 0%, #fdf6e3 100%)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        minHeight: '100vh',
+        padding: 0,
+        transition: 'all 0.5s ease-in-out'
+    };
 
     return (
         <>
             <Header />
             <AddLocationModal show={modalShow} onHide={() => setModalShow(false)} />
-            <main style={{ background: 'linear-gradient(135deg, #e0eafc 0%, #fdf6e3 100%)', minHeight: '100vh', padding: 0 }}>
+            <main style={mainStyle}>
                 <Container className="py-5">
-                    <h1 className="mb-5 text-center" style={{ fontWeight: 700, color: '#2d3a4b' }}>Your Daily Travel Plan</h1>
-                    <div style={{ backgroundColor: "white", padding: "35px", borderRadius: "15px"}}>
-                        {days.map((date, idx) => (
+                    <section className="text-center mb-5">
+                        <h1 style={{ fontWeight: 700, fontSize: '2.5rem', color: '#2d3a4b' }}>
+                            Your Journey to {destination}
+                        </h1>
+                        <p style={{ fontSize: '1.2rem', color: '#4f5d75' }}>
+                            Plan your daily adventures and make memories that last a lifetime
+                        </p>
+                    </section>
+                    <div style={{ 
+                        backgroundColor: backgroundImage ? 'rgba(255, 255, 255, 0.95)' : 'white', 
+                        padding: "35px", 
+                        borderRadius: "15px",
+                        backdropFilter: backgroundImage ? 'blur(10px)' : 'none',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                    }}>
+                        {days.length > 0 ? days.map((date, idx) => (
                         <div key={date.toISOString()}>
                             <section className="mb-5">
-                                <h3 style={{ color: '#457b9d', fontWeight: 600 }}>Day {idx + 1} - {date.toLocaleDateString()}</h3>
+                                <h3 style={{ color: '#457b9d', fontWeight: 600 }}>
+                                    Day {idx + 1} - {date.toLocaleDateString('en-US', { 
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
+                                    })}
+                                </h3>
                                 <div className="mt-3">
-                                    {samplePlaces.map((place, i) => (
-                                        <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
-                                            <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
-                                                <Card.Img
-                                                    variant="top"
-                                                    src={place.image}
-                                                    alt={place.name}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        objectFit: 'cover',
-                                                        maxHeight: 220,
-                                                        filter: 'brightness(0.65)'
-                                                    }}
-                                                />
-                                                <div
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: 0,
-                                                        left: 0,
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        color: 'white',
-                                                        padding: '1.5rem',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        justifyContent: 'flex-end',
-                                                        background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)'
-                                                    }}
-                                                >
-                                                    <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{place.name}</Card.Title>
-                                                    <Card.Text style={{ fontSize: 16 }}>
-                                                        <strong>Address:</strong> {place.address}<br />
-                                                        <strong>Phone:</strong> {place.phone}<br />
-                                                        <strong>Category:</strong> {place.category}
-                                                    </Card.Text>
-                                                </div>
-                                            </div>
+                                    {/* Show day location if it exists from trip data */}
+                                    {trip && trip.dayLocations && trip.dayLocations[idx] && trip.dayLocations[idx].location ? (
+                                        <Card className="mb-4 w-100 shadow-sm border-0" style={{ backgroundColor: '#f8f9fa' }}>
+                                            <Card.Body>
+                                                <Card.Title style={{ color: '#457b9d' }}>
+                                                    📍 {trip.dayLocations[idx].location}
+                                                </Card.Title>
+                                                <Card.Text>
+                                                    {trip.dayLocations[idx].notes || "No additional notes yet."}
+                                                </Card.Text>
+                                            </Card.Body>
                                         </Card>
-                                    ))}
+                                    ) : (
+                                        /* Show sample places for demonstration */
+                                        samplePlaces.map((place, i) => (
+                                            <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
+                                                <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
+                                                    <Card.Img
+                                                        variant="top"
+                                                        src={place.image}
+                                                        alt={place.name}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            objectFit: 'cover',
+                                                            maxHeight: 220,
+                                                            filter: 'brightness(0.65)'
+                                                        }}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            color: 'white',
+                                                            padding: '1.5rem',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            justifyContent: 'flex-end',
+                                                            background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)'
+                                                        }}
+                                                    >
+                                                        <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{place.name}</Card.Title>
+                                                        <Card.Text style={{ fontSize: 16 }}>
+                                                            <strong>Address:</strong> {place.address}<br />
+                                                            <strong>Phone:</strong> {place.phone}<br />
+                                                            <strong>Category:</strong> {place.category}
+                                                        </Card.Text>
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        ))
+                                    )}
                                 </div>
                             </section>
                             {/* Add button section */}
@@ -110,7 +177,6 @@ function TravelPlanning() {
                                             color: 'white',
                                             borderRadius: '50%',
                                             width: 60,
-                                            
                                             height: 60,
                                             fontSize: 36,
                                             display: 'flex',
@@ -127,7 +193,11 @@ function TravelPlanning() {
                                 </div>
                             </section>
                         </div>
-                    ))}
+                        )) : (
+                            <div className="text-center py-5">
+                                <h4 style={{ color: '#6c757d' }}>Loading your travel plan...</h4>
+                            </div>
+                        )}
                     </div>
                 </Container>
             </main>

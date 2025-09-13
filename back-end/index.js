@@ -2,8 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const activitiesRoutes = require('./routes/activities');
 const authRoutes = require('./routes/auth');
+const tripRoutes = require('./routes/trips');
 const sequelize = require('./models/index');
-const User = require('./models/User');
+// Import models with associations
+const { User, Trip, DayLocation } = require('./models/associations');
 
 const app = express();
 
@@ -16,6 +18,7 @@ app.get('/test', (req, res) => {
 
 app.use('/activities', activitiesRoutes);
 app.use('/auth', authRoutes);
+app.use('/trips', tripRoutes);
 
 // Database sync and server start
 const startServer = async () => {
