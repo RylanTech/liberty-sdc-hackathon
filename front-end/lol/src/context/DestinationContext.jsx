@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 let xRapidAPIKey = import.meta.env.VITE_X_RAPIDAPI_KEY || '';
-
+let xRapidYelpKey = import.meta.env.VITE_YELP_XRAPIDAPI_KEY || '';
 export const DestinationContext = createContext();
 
 export function DestinationProvider({ children }) {
@@ -35,8 +35,31 @@ export function DestinationProvider({ children }) {
         }
     };
 
+
+    async function yelpLocations(location, query) {
+        const options = {
+            method: 'GET',
+            url: 'https://yelp-business-reviews.p.rapidapi.com/search',
+            params: {
+                location: location,
+                query: query
+            },
+            headers: {
+                'x-rapidapi-key': xRapidYelpKey,
+                'x-rapidapi-host': 'yelp-business-reviews.p.rapidapi.com'
+            }
+        };
+
+        try {
+            const response = await axios.request(options);
+            return response
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
-        <DestinationContext.Provider value={{ loading, error, fetchSuggestions }}>
+        <DestinationContext.Provider value={{ loading, error, fetchSuggestions, yelpLocations }}>
             {children}
         </DestinationContext.Provider>
     );
