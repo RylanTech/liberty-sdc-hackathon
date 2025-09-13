@@ -1,15 +1,15 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT,
-  }
-);
+const sequelize = new Sequelize({
+  dialect: process.env.DB_DIALECT || 'sqlite',
+  storage: process.env.DB_DIALECT === 'sqlite' ? './database.sqlite' : undefined,
+  host: process.env.DB_HOST || 'localhost',
+  database: process.env.DB_NAME || 'hackathon_db',
+  username: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  logging: false,
+});
 
 async function testConnection() {
   try {
