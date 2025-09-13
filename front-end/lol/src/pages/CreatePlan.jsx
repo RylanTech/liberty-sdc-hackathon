@@ -23,8 +23,13 @@ function CreatePlan() {
     const [placeId, setPlaceId] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const [startDate, setStartDate] = useState(today.toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(tomorrow.toISOString().split('T')[0]);
     const [numberOfTravelers, setNumberOfTravelers] = useState(1);
     const [backgroundImage, setBackgroundImage] = useState("");
     const [imageLoading, setImageLoading] = useState(false);
@@ -201,7 +206,8 @@ function CreatePlan() {
             }
         }
     };
-    const today = new Date().toISOString().split('T')[0];
+    
+    const todayString = new Date().toISOString().split('T')[0];
 
     // Dynamic background style
     const mainStyle = {
@@ -286,7 +292,7 @@ function CreatePlan() {
                                                 From
                                                 <Form.Control
                                                     type="date"
-                                                    min={today}
+                                                    min={todayString}
                                                     value={startDate}
                                                     onChange={e => setStartDate(e.target.value)}
                                                 />
@@ -294,7 +300,7 @@ function CreatePlan() {
                                             <div className="col-6">
                                                 To
                                                 <Form.Control type="date"
-                                                    min={startDate || today}
+                                                    min={startDate || todayString}
                                                     value={endDate}
                                                     onChange={e => setEndDate(e.target.value)}
                                                 />

@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { searchOpenStreetMap } = require('../services/nominatimService');
+const authMiddleware = require('../middleware/auth');
+const {
+  addActivityToDay,
+  getDayActivities
+} = require('../controllers/activitiesController');
 
 router.get('/search', async (req, res) => {
   try {
@@ -25,5 +30,14 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Protected routes - require authentication
+router.use(authMiddleware);
+
+// Add activity to a specific day of a trip
+router.post('/trips/:tripId/days/:dayNumber', addActivityToDay);
+
+// Get activities for a specific day of a trip
+router.get('/trips/:tripId/days/:dayNumber', getDayActivities);
 
 module.exports = router;

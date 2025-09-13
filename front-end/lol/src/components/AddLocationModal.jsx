@@ -50,7 +50,6 @@ function AddLocationModal(props) {
             let locations = await yelpLocations(destination, query)
             setYelpLocationsList(locations.data.data.results)
             console.log(locations.data)
-            console.log(locations.data.results)
         }, 500);
 
     }
@@ -63,7 +62,9 @@ function AddLocationModal(props) {
     };
 
     function addToTrip(location) {
-        
+        if (props.onAddToTrip) {
+            props.onAddToTrip(location);
+        }
     }
 
     return (
@@ -184,7 +185,7 @@ function AddLocationModal(props) {
                                                         {loc.website && (
                                                             <div>
                                                                 <a href={loc.website} target="_blank" rel="noopener noreferrer">
-                                                                    {loc.website}
+                                                                    Website
                                                                 </a>
                                                             </div>
                                                         )}
@@ -200,7 +201,7 @@ function AddLocationModal(props) {
                                                         variant="success"
                                                         size="sm"
                                                         onClick={() => {
-                                                            addToTrip(loc)
+                                                            addToTrip(loc);
                                                         }}
                                                     >
                                                         Add to Trip
@@ -216,6 +217,9 @@ function AddLocationModal(props) {
                     </Row>
                 </Container>
             </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={props.onHide}>Close</Button>
+            </Modal.Footer>
         </Modal>
     );
 }

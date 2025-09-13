@@ -93,6 +93,7 @@ function TravelPlanning() {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
     const [modalShow, setModalShow] = useState(false);
+    const [currentDay, setCurrentDay] = useState(null);
     const [trip, setTrip] = useState(null);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -101,6 +102,8 @@ function TravelPlanning() {
     const [userTrips, setUserTrips] = useState([]);
     const [showTripSelectModal, setShowTripSelectModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [dayActivities, setDayActivities] = useState({});
+    const [initialPopulationDone, setInitialPopulationDone] = useState(false);
 
 
     // Function to fetch user's trips
@@ -145,6 +148,86 @@ function TravelPlanning() {
         setBackgroundImage(selectedTrip.backgroundImage || "");
         setShowTripSelectModal(false);
         setLoading(false);
+        
+        // Fetch activities for all days of this trip
+        fetchTripActivities(selectedTrip.id, selectedTrip.startDate, selectedTrip.endDate);
+    };
+
+    // Function to fetch activities for all days of a trip
+    const fetchTripActivities = async (tripId, tripStartDate, tripEndDate) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const start = new Date(tripStartDate || startDate || trip?.startDate);
+            const end = new Date(tripEndDate || endDate || trip?.endDate);
+            const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            console.log('Fetching activities for trip:', tripId, 'Days:', totalDays, 'Start:', start, 'End:', end);
+            
+            const activitiesData = {};
+            
+            for (let day = 1; day <= totalDays; day++) {
+                try {
+                    const response = await axios.get(
+                        `http://localhost:3001/activities/trips/${tripId}/days/${day}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    console.log(`Day ${day} activities:`, response.data.activities);
+                    activitiesData[day] = response.data.activities || [];
+                } catch (error) {
+                    console.error(`Error fetching activities for day ${day}:`, error);
+                    activitiesData[day] = [];
+                }
+            }
+            
+            setDayActivities(activitiesData);
+            console.log('Final activities data:', activitiesData);
+            
+            // If no activities exist for any day, populate with dummy data
+            const hasAnyActivities = Object.values(activitiesData).some(activities => activities.length > 0);
+            if (!hasAnyActivities && !initialPopulationDone) {
+                await populateInitialActivities(tripId, totalDays);
+            }
+            
+        } catch (error) {
+            console.error('Error fetching trip activities:', error);
+        }
+    };
+
+    // Function to populate initial dummy activities
+    const populateInitialActivities = async (tripId, totalDays) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            setInitialPopulationDone(true); // Prevent re-population
+
+            // Add dummy businesses to the first day only
+            for (const business of dummyBusiness) {
+                await axios.post(
+                    `http://localhost:3001/activities/trips/${tripId}/days/1`,
+                    { activity: business },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+            }
+            
+            // Refresh activities after adding dummy data
+            fetchTripActivities(tripId, trip?.startDate, trip?.endDate);
+        } catch (error) {
+            console.error('Error populating initial activities:', error);
+            setInitialPopulationDone(false); // Allow retry if population fails
+        }
     };
 
     // Function to delete a trip
@@ -225,6 +308,9 @@ function TravelPlanning() {
                 setBackgroundImage(bgImg || "");
                 console.log('Trip data received from create-plan:', tripData);
                 setLoading(false);
+                
+                // Fetch activities for this trip
+                fetchTripActivities(tripData.id, start || tripData.startDate, end || tripData.endDate);
             } else {
                 console.log('TravelPlanning - Fetching existing trips...');
                 // Navigating directly to travel planning - check for existing trips
@@ -272,13 +358,60 @@ function TravelPlanning() {
             <Header />
             <AddLocationModal
                 show={modalShow}
-                onHide={() => setModalShow(false)}
+                onHide={() => {
+                    setModalShow(false);
+                    setCurrentDay(null);
+                }}
                 defaultDestination={destination}
                 tripId={trip?.id}
-                onAddToTrip={(location) => {
+                dayNumber={currentDay}
+                onAddToTrip={async (location) => {
                     // Handle adding location to trip
-                    console.log('Adding location to trip:', location);
-                    // You can implement the logic to save this to the backend here
+                    console.log('Adding location to trip:', location, 'Day:', currentDay);
+                    console.log('Trip ID:', trip?.id);
+                    console.log('Current day:', currentDay);
+                    
+                    if (trip?.id && currentDay) {
+                        try {
+                            const token = localStorage.getItem('token');
+                            console.log('Token exists:', !!token);
+                            
+                            const url = `http://localhost:3001/activities/trips/${trip.id}/days/${currentDay}`;
+                            console.log('Making request to:', url);
+                            
+                            const response = await axios.post(
+                                url,
+                                { activity: location },
+                                {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`,
+                                        'Content-Type': 'application/json'
+                                    }
+                                }
+                            );
+                            
+                            console.log('Response status:', response.status);
+                            console.log('Response data:', response.data);
+                            
+                            if (response.status === 200) {
+                                // Refresh the trip data to show the new activity
+                                console.log('Activity added successfully:', response.data);
+                                setModalShow(false);
+                                setCurrentDay(null);
+                                // Refresh activities for this trip
+                                if (trip?.id) {
+                                    fetchTripActivities(trip.id, trip.startDate, trip.endDate);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error adding activity:', error);
+                            console.error('Error response:', error.response?.data);
+                            console.error('Error status:', error.response?.status);
+                            alert('Failed to add activity. Please try again.');
+                        }
+                    } else {
+                        console.error('Missing trip ID or current day:', { tripId: trip?.id, currentDay });
+                    }
                 }}
             />
 
@@ -469,57 +602,54 @@ function TravelPlanning() {
                                                         </Card.Body>
                                                     </Card>
                                                 ) : (
-                                                    /* Show dummyBusiness for demonstration */
-                                                    dummyBusiness.map((biz, i) => (
-                                                        <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
-                                                            <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
-                                                                <Card.Img
-                                                                    variant="top"
-                                                                    src={biz.images && biz.images[0]}
-                                                                    alt={biz.name}
-                                                                    style={{
-                                                                        width: '100%',
-                                                                        height: '100%',
-                                                                        objectFit: 'cover',
-                                                                        maxHeight: 220,
-                                                                        filter: 'brightness(0.65)'
-                                                                    }}
-                                                                />
-                                                                <div
-                                                                    style={{
-                                                                        position: 'absolute',
-                                                                        top: 0,
-                                                                        left: 0,
-                                                                        width: '100%',
-                                                                        height: '100%',
-                                                                        color: 'white',
-                                                                        padding: '1.5rem',
-                                                                        display: 'flex',
-                                                                        flexDirection: 'column',
-                                                                        justifyContent: 'flex-end',
-                                                                        background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)'
-                                                                    }}
-                                                                >
-                                                                    <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{biz.name}</Card.Title>
-                                                                    <Card.Text style={{ fontSize: 16 }}>
-                                                                        {biz.address ? (
-                                                                            <><strong>Address:</strong> <br /></>
-                                                                        ) : (
-                                                                            <></>
-                                                                        )}
-                                                                        {biz.website ? (
-                                                                            <><strong>Website:</strong> <a href={biz.website} target="_blank">{biz.website}</a> <br /></>
-                                                                        ) : (
-                                                                            <></>
-                                                                        )}
-                                                                        
-                                                                        <strong>Phone:</strong> {biz.phone || 'N/A'}<br />
-                                                                        <strong>Category:</strong> {Array.isArray(biz.categories) ? biz.categories.join(', ') : biz.categories || 'N/A'}
-                                                                    </Card.Text>
+                                                    /* Show saved activities for this day */
+                                                    dayActivities[idx + 1] && dayActivities[idx + 1].length > 0 ? (
+                                                        dayActivities[idx + 1].map((activity, i) => (
+                                                            <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
+                                                                <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
+                                                                    <Card.Img
+                                                                        variant="top"
+                                                                        src={activity.images && activity.images[0]}
+                                                                        alt={activity.name}
+                                                                        style={{
+                                                                            width: '100%',
+                                                                            height: '100%',
+                                                                            objectFit: 'cover',
+                                                                            maxHeight: 220,
+                                                                            filter: 'brightness(0.65)'
+                                                                        }}
+                                                                    />
+                                                                    <div
+                                                                        style={{
+                                                                            position: 'absolute',
+                                                                            top: 0,
+                                                                            left: 0,
+                                                                            width: '100%',
+                                                                            height: '100%',
+                                                                            color: 'white',
+                                                                            padding: '1.5rem',
+                                                                            display: 'flex',
+                                                                            flexDirection: 'column',
+                                                                            justifyContent: 'flex-end',
+                                                                            background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)'
+                                                                        }}
+                                                                    >
+                                                                        <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{activity.name}</Card.Title>
+                                                                        <Card.Text style={{ fontSize: 16 }}>
+                                                                            <strong>Rating:</strong> {activity.rating} ⭐ ({activity.reviewCount} reviews)<br />
+                                                                            <strong>Phone:</strong> {activity.phone || 'N/A'}<br />
+                                                                            <strong>Category:</strong> {Array.isArray(activity.categories) ? activity.categories.join(', ') : activity.categories || 'N/A'}
+                                                                        </Card.Text>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </Card>
-                                                    ))
+                                                            </Card>
+                                                        ))
+                                                    ) : (
+                                                        <div className="text-center py-4" style={{ color: '#6c757d' }}>
+                                                            <p>No activities planned for this day yet.</p>
+                                                            <p><small>Click the + button below to add some!</small></p>
+                                                        </div>
+                                                    )
                                                 )}
                                             </div>
                                         </section>
@@ -542,7 +672,10 @@ function TravelPlanning() {
                                                         cursor: 'pointer'
                                                     }}
                                                     aria-label="Add new travel section"
-                                                    onClick={() => setModalShow(true)}
+                                                    onClick={() => {
+                                                        setCurrentDay(idx + 1);
+                                                        setModalShow(true);
+                                                    }}
                                                 >
                                                     +
                                                 </button>
