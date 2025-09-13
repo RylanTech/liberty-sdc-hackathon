@@ -1,6 +1,7 @@
 import { Container, Card, Row, Col } from "react-bootstrap";
 import Header from "../components/Header";
 import { useState } from "react";
+import AddLocationModal from "../components/AddLocationModal";
 
 // Helper to generate days between two dates
 function getDaysArray(start, end) {
@@ -39,7 +40,7 @@ const samplePlaces = [
 ];
 
 function TravelPlanning() {
-    // Example date range (replace with props or context as needed)
+    const [modalShow, setModalShow] = useState(false);
     const [startDate] = useState("2025-09-20");
     const [endDate] = useState("2025-09-22");
     const days = getDaysArray(startDate, endDate);
@@ -47,10 +48,12 @@ function TravelPlanning() {
     return (
         <>
             <Header />
+            <AddLocationModal show={modalShow} onHide={() => setModalShow(false)} />
             <main style={{ background: 'linear-gradient(135deg, #e0eafc 0%, #fdf6e3 100%)', minHeight: '100vh', padding: 0 }}>
                 <Container className="py-5">
                     <h1 className="mb-5 text-center" style={{ fontWeight: 700, color: '#2d3a4b' }}>Your Daily Travel Plan</h1>
-                    {days.map((date, idx) => (
+                    <div style={{ backgroundColor: "white", padding: "35px", borderRadius: "15px"}}>
+                        {days.map((date, idx) => (
                         <div key={date.toISOString()}>
                             <section className="mb-5">
                                 <h3 style={{ color: '#457b9d', fontWeight: 600 }}>Day {idx + 1} - {date.toLocaleDateString()}</h3>
@@ -107,6 +110,7 @@ function TravelPlanning() {
                                             color: 'white',
                                             borderRadius: '50%',
                                             width: 60,
+                                            
                                             height: 60,
                                             fontSize: 36,
                                             display: 'flex',
@@ -116,6 +120,7 @@ function TravelPlanning() {
                                             cursor: 'pointer'
                                         }}
                                         aria-label="Add new travel section"
+                                        onClick={() => setModalShow(true)}
                                     >
                                         +
                                     </button>
@@ -123,6 +128,7 @@ function TravelPlanning() {
                             </section>
                         </div>
                     ))}
+                    </div>
                 </Container>
             </main>
         </>
