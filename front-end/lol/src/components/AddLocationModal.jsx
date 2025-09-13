@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { Form, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -7,12 +7,20 @@ import { DestinationContext } from '../context/DestinationContext';
 
 function AddLocationModal(props) {
     const [suggestions, setSuggestions] = useState([])
-    const [destination, setDestination] = useState("");
+    const [destination, setDestination] = useState(props.defaultDestination || "");
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [yelpLocationsList, setYelpLocationsList] = useState([])
     const [query, setQuery] = useState("")
     const debounceTimeout = useRef(null);
 
     const { fetchSuggestions, yelpLocations } = useContext(DestinationContext)
+
+    // Update destination when props change
+    useEffect(() => {
+        if (props.defaultDestination) {
+            setDestination(props.defaultDestination);
+        }
+    }, [props.defaultDestination]);
 
     function searchDestinations(e) {
         const value = e.target.value;
@@ -25,6 +33,10 @@ function AddLocationModal(props) {
                 let desti = await fetchSuggestions(value);
                 console.log(desti)
                 setSuggestions(desti.data.predictions || []);
+                setShowSuggestions(true);
+            } else {
+                setSuggestions([]);
+                setShowSuggestions(false);
             }
         }, 500);
     }
@@ -46,6 +58,7 @@ function AddLocationModal(props) {
     const handleDestinationSelect = (suggestion) => {
         setDestination(suggestion.description);
         setSuggestions([]);
+        setShowSuggestions(false);
     };
 
     return (
@@ -63,17 +76,25 @@ function AddLocationModal(props) {
                             <Form.Control type="text"
                                 value={destination}
                                 onChange={(e) => searchDestinations(e)}
-                                onBlur={() => setTimeout(() => setSuggestions([]), 100)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                onFocus={() => {
+                                    if (suggestions.length > 0) {
+                                        setShowSuggestions(true);
+                                    }
+                                }}
                                 id="destination"
                                 className='mb-3'
                                 placeholder="Where do you want to go?" />
-                            {suggestions.length > 0 && (
+                            {suggestions.length > 0 && showSuggestions && (
                                 <ul className="list-group position-absolute" style={{ zIndex: 1000, width: '100%' }}>
                                     {suggestions.map((suggestion) => (
                                         <li
                                             key={suggestion.place_id}
                                             className="list-group-item list-group-item-action"
-                                            onClick={() => handleDestinationSelect(suggestion)}
+                                            onMouseDown={(e) => {
+                                                e.preventDefault(); // Prevent input blur
+                                                handleDestinationSelect(suggestion);
+                                            }}
                                             style={{ cursor: 'pointer' }}
                                         >
                                             {suggestion.description}

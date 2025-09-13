@@ -32,9 +32,11 @@ const Trip = sequelize.define('Trip', {
     allowNull: false,
     validate: {
       isDate: true,
-      isAfter: {
-        args: new Date().toISOString().split('T')[0],
-        msg: 'Start date must be in the future',
+      isAfterOrToday(value) {
+        const today = new Date().toISOString().split('T')[0];
+        if (value < today) {
+          throw new Error('Start date must be today or in the future');
+        }
       },
     },
   },
