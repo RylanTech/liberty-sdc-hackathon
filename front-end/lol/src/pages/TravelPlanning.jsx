@@ -42,50 +42,50 @@ function getDaysArray(start, end) {
 //     }
 // ];
 
-const dummyBusiness = [{
-    "bizId": "4UA5jW1nm37ps-u5cx1Zng",
-    "name": "Monowi Tavern",
-    "alias": "monowi-tavern-lynch",
-    "serviceArea": null,
-    "lat": 42.82877457,
-    "lon": -98.32962631,
-    "rating": 4.9,
-    "reviewCount": 14,
-    "categories": [
-        "Burgers",
-        "Beer Bars",
-        "Sandwiches"
-    ],
-    "services": [],
-    "businessHighlights": [],
-    "priceRange": "$",
-    "phone": "(402) 569-3600",
-    "website": null,
-    "images": [
-        "https://s3-media0.fl.yelpcdn.com/bphoto/YFAVH-J-UPFYhNwAYDt06w/348s.jpg"
-    ]
-},
-{
-    "bizId": "LLoUJYSiKrpnLsYQ-Z16Yg",
-    "name": "Theatre IV",
-    "alias": "theatre-iv-richmond",
-    "serviceArea": null,
-    "lat": 37.5467778,
-    "lon": -77.443148,
-    "rating": 4.5,
-    "reviewCount": 2,
-    "categories": [
-        "Theatres"
-    ],
-    "services": [],
-    "businessHighlights": [],
-    "priceRange": null,
-    "phone": "(804) 282-2620",
-    "website": "http://va-rep.org/november.html",
-    "images": [
-        "https://s3-media0.fl.yelpcdn.com/bphoto/A9qKeQugrIvuPCacLKx82w/348s.jpg"
-    ]
-}]
+// const dummyBusiness = [{
+//     "bizId": "4UA5jW1nm37ps-u5cx1Zng",
+//     "name": "Monowi Tavern",
+//     "alias": "monowi-tavern-lynch",
+//     "serviceArea": null,
+//     "lat": 42.82877457,
+//     "lon": -98.32962631,
+//     "rating": 4.9,
+//     "reviewCount": 14,
+//     "categories": [
+//         "Burgers",
+//         "Beer Bars",
+//         "Sandwiches"
+//     ],
+//     "services": [],
+//     "businessHighlights": [],
+//     "priceRange": "$",
+//     "phone": "(402) 569-3600",
+//     "website": null,
+//     "images": [
+//         "https://s3-media0.fl.yelpcdn.com/bphoto/YFAVH-J-UPFYhNwAYDt06w/348s.jpg"
+//     ]
+// },
+// {
+//     "bizId": "LLoUJYSiKrpnLsYQ-Z16Yg",
+//     "name": "Theatre IV",
+//     "alias": "theatre-iv-richmond",
+//     "serviceArea": null,
+//     "lat": 37.5467778,
+//     "lon": -77.443148,
+//     "rating": 4.5,
+//     "reviewCount": 2,
+//     "categories": [
+//         "Theatres"
+//     ],
+//     "services": [],
+//     "businessHighlights": [],
+//     "priceRange": null,
+//     "phone": "(804) 282-2620",
+//     "website": "http://va-rep.org/november.html",
+//     "images": [
+//         "https://s3-media0.fl.yelpcdn.com/bphoto/A9qKeQugrIvuPCacLKx82w/348s.jpg"
+//     ]
+// }]
 
 
 function TravelPlanning() {
@@ -189,46 +189,12 @@ function TravelPlanning() {
             setDayActivities(activitiesData);
             console.log('Final activities data:', activitiesData);
             
-            // If no activities exist for any day, populate with dummy data
-            const hasAnyActivities = Object.values(activitiesData).some(activities => activities.length > 0);
-            if (!hasAnyActivities && !initialPopulationDone) {
-                await populateInitialActivities(tripId, totalDays);
-            }
             
         } catch (error) {
             console.error('Error fetching trip activities:', error);
         }
     };
-
-    // Function to populate initial dummy activities
-    const populateInitialActivities = async (tripId, totalDays) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            setInitialPopulationDone(true); // Prevent re-population
-
-            // Add dummy businesses to the first day only
-            for (const business of dummyBusiness) {
-                await axios.post(
-                    `http://localhost:3001/activities/trips/${tripId}/days/1`,
-                    { activity: business },
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                );
-            }
-            
-            // Refresh activities after adding dummy data
-            fetchTripActivities(tripId, trip?.startDate, trip?.endDate);
-        } catch (error) {
-            console.error('Error populating initial activities:', error);
-            setInitialPopulationDone(false); // Allow retry if population fails
-        }
-    };
+  
 
     // Function to delete a trip
     const deleteTrip = async (tripId, event) => {
