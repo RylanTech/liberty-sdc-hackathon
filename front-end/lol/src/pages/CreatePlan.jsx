@@ -1,8 +1,8 @@
 import { Button, Container, Form, Row } from "react-bootstrap"
 import Header from "../components/Header"
 import { DestinationContext } from "../context/DestinationContext";
+import { useAuth } from "../context/AuthContext";
 import { useContext, useState, useRef } from "react";
-import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 function CreatePlan() {
@@ -13,10 +13,8 @@ function CreatePlan() {
     const [endDate, setEndDate] = useState("");
     const [numberOfTravelers, setNumberOfTravelers] = useState(1);
     const { fetchSuggestions } = useContext(DestinationContext);
+    const { isAuthenticated, user } = useAuth();
     const debounceTimeout = useRef(null);
-
-
-    const { logedInStatus } = useContext(UserContext);
 
     function searchDestinations(e) {
         const value = e.target.value;
@@ -40,16 +38,20 @@ function CreatePlan() {
             destination,
             startDate,
             endDate,
-            numberOfTravelers
+            numberOfTravelers,
+            placeId
         }
-        console.log(planDetails);
+        console.log('Plan Details:', planDetails);
+        console.log('Is Authenticated:', isAuthenticated);
+        console.log('User:', user);
 
-        if (!logedInStatus) {
+        if (!isAuthenticated) {
+            console.log('User not authenticated, redirecting to sign-up');
             navigate("/sign-up");
         } else {
-            navigate("travel-planing")
+            console.log('User authenticated, proceeding to travel planning');
+            navigate("/travel-planing", { state: planDetails });
         }
-
     }
     const today = new Date().toISOString().split('T')[0];
 
@@ -120,7 +122,7 @@ function CreatePlan() {
                                         />
                                     </div>
                                     <div className="d-grid gap-2 mt-4">
-                                        <Button onClick={handleSubmit()} className="btn btn-primary btn-lg" style={{ background: '#457b9d', border: 'none' }}>
+                                        <Button onClick={handleSubmit} className="btn btn-primary btn-lg" style={{ background: '#457b9d', border: 'none' }}>
                                             Start Planning ✈️
                                         </Button>
                                     </div>
