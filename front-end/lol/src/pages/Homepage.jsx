@@ -104,7 +104,7 @@ function Homepage() {
                                 <div className="card-body text-center">
                                     <span style={{ fontSize: '2.5rem', color: '#457b9d' }}>🗺️</span>
                                     <h5 className="card-title mt-3">Smart Itineraries</h5>
-                                    <p className="card-text">Easily build, customize, and share your travel plans with friends and family.</p>
+                                    <p className="card-text">Easily build & customize your travel plans with friends and family.</p>
                                 </div>
                             </div>
                         </div>
@@ -112,8 +112,8 @@ function Homepage() {
                             <div className="card h-100 shadow-sm border-0">
                                 <div className="card-body text-center">
                                     <span style={{ fontSize: '2.5rem', color: '#457b9d' }}>✈️</span>
-                                    <h5 className="card-title mt-3">Book & Go</h5>
-                                    <p className="card-text">Find the best deals on flights, hotels, and experiences—all in one place.</p>
+                                    <h5 className="card-title mt-3">Plan Ahead</h5>
+                                    <p className="card-text">Prepare in advance for your vacations.</p>
                                 </div>
                             </div>
                         </div>

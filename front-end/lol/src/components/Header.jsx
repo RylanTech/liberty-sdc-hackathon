@@ -18,8 +18,8 @@ function Header() {
                 <Navbar.Toggle aria-controls="main-navbar-nav" />
                 <Navbar.Collapse id="main-navbar-nav">
                     <Nav className="ms-auto">
-                        <Link to={"/"} style={{ fontWeight: 500 }}>Home</Link>
-                        <Link to={"/create-plan"} style={{ fontWeight: 500 }}>Create a plan</Link>
+                        <Link className='btn' to={"/"} style={{ fontWeight: 500 }}>Home</Link>
+                        <Link className='btn' to={"/create-plan"} style={{ fontWeight: 500 }}>Create a plan</Link>
                         
                         {isAuthenticated ? (
                             <Dropdown align="end">
