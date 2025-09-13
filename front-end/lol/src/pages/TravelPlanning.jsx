@@ -18,29 +18,54 @@ function getDaysArray(start, end) {
 }
 
 // Example data for places (replace with real data as needed)
-const samplePlaces = [
-    {
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-        name: "Central Park",
-        address: "New York, NY 10022, USA",
-        phone: "+1 212-310-6600",
-        category: "Park"
-    },
-    {
-        image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-        name: "Metropolitan Museum of Art",
-        address: "1000 5th Ave, New York, NY 10028, USA",
-        phone: "+1 212-535-7710",
-        category: "Museum"
-    },
-    {
-        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-        name: "Joe's Pizza",
-        address: "7 Carmine St, New York, NY 10014, USA",
-        phone: "+1 212-366-1182",
-        category: "Restaurant"
-    }
-];
+// const samplePlaces = [
+//     {
+//         image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+//         name: "Central Park",
+//         address: "New York, NY 10022, USA",
+//         phone: "+1 212-310-6600",
+//         category: "Park"
+//     },
+//     {
+//         image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+//         name: "Metropolitan Museum of Art",
+//         address: "1000 5th Ave, New York, NY 10028, USA",
+//         phone: "+1 212-535-7710",
+//         category: "Museum"
+//     },
+//     {
+//         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+//         name: "Joe's Pizza",
+//         address: "7 Carmine St, New York, NY 10014, USA",
+//         phone: "+1 212-366-1182",
+//         category: "Restaurant"
+//     }
+// ];
+
+    const dummyBusiness = [ {
+        "bizId": "4UA5jW1nm37ps-u5cx1Zng",
+        "name": "Monowi Tavern",
+        "alias": "monowi-tavern-lynch",
+        "serviceArea": null,
+        "lat": 42.82877457,
+        "lon": -98.32962631,
+        "rating": 4.9,
+        "reviewCount": 14,
+        "categories": [
+            "Burgers",
+            "Beer Bars",
+            "Sandwiches"
+        ],
+        "services": [],
+        "businessHighlights": [],
+        "priceRange": "$",
+        "phone": "(402) 569-3600",
+        "website": null,
+        "images": [
+            "https://s3-media0.fl.yelpcdn.com/bphoto/YFAVH-J-UPFYhNwAYDt06w/348s.jpg"
+        ]
+    }]
+
 
 function TravelPlanning() {
     const location = useLocation();
@@ -55,7 +80,8 @@ function TravelPlanning() {
     const [userTrips, setUserTrips] = useState([]);
     const [showTripSelectModal, setShowTripSelectModal] = useState(false);
     const [loading, setLoading] = useState(true);
-    
+
+
     // Function to fetch user's trips
     const fetchUserTrips = async () => {
         try {
@@ -99,18 +125,18 @@ function TravelPlanning() {
         setShowTripSelectModal(false);
         setLoading(false);
     };
-    
+
     useEffect(() => {
         const initializePage = async () => {
             console.log('TravelPlanning - Initializing page...');
             console.log('TravelPlanning - isAuthenticated:', isAuthenticated);
             console.log('TravelPlanning - user:', user);
             console.log('TravelPlanning - location.state:', location.state);
-            
+
             // First, check if we have a token
             const token = localStorage.getItem('token');
             console.log('TravelPlanning - token exists:', !!token);
-            
+
             if (!token) {
                 console.log('No token found, redirecting to sign-in');
                 navigate("/sign-in");
@@ -133,7 +159,7 @@ function TravelPlanning() {
                 // Navigating directly to travel planning - check for existing trips
                 const trips = await fetchUserTrips();
                 console.log('TravelPlanning - Found trips:', trips.length);
-                
+
                 if (trips.length === 0) {
                     // No trips exist, redirect to create-plan
                     console.log('TravelPlanning - No trips found, redirecting to create-plan');
@@ -158,7 +184,7 @@ function TravelPlanning() {
 
     // Dynamic background style similar to CreatePlan
     const mainStyle = {
-        background: backgroundImage 
+        background: backgroundImage
             ? `linear-gradient(rgba(224, 234, 252, 0.85), rgba(253, 246, 227, 0.85)), url(${backgroundImage})`
             : 'linear-gradient(135deg, #e0eafc 0%, #fdf6e3 100%)',
         backgroundSize: 'cover',
@@ -174,7 +200,7 @@ function TravelPlanning() {
         <>
             <Header />
             <AddLocationModal show={modalShow} onHide={() => setModalShow(false)} />
-            
+
             {/* Trip Selection Modal */}
             <Modal show={showTripSelectModal} onHide={() => setShowTripSelectModal(false)} size="lg" centered>
                 <Modal.Header closeButton style={{ borderBottom: '1px solid #e0e0e0' }}>
@@ -182,7 +208,7 @@ function TravelPlanning() {
                 </Modal.Header>
                 <Modal.Body style={{ padding: '2rem' }}>
                     <p className="mb-4" style={{ color: '#4f5d75' }}>
-                        You have {userTrips.length} existing trip{userTrips.length > 1 ? 's' : ''}. 
+                        You have {userTrips.length} existing trip{userTrips.length > 1 ? 's' : ''}.
                         Please select one to continue planning or create a new trip.
                     </p>
                     <div className="row">
@@ -190,9 +216,9 @@ function TravelPlanning() {
                             const tripDuration = Math.ceil((new Date(userTrip.endDate) - new Date(userTrip.startDate)) / (1000 * 60 * 60 * 24)) + 1;
                             return (
                                 <div key={userTrip.id} className="col-md-6 mb-3">
-                                    <Card 
-                                        className="h-100 shadow-sm border-0 trip-card" 
-                                        style={{ 
+                                    <Card
+                                        className="h-100 shadow-sm border-0 trip-card"
+                                        style={{
                                             cursor: 'pointer',
                                             transition: 'transform 0.2s, box-shadow 0.2s',
                                             border: '2px solid transparent'
@@ -226,25 +252,25 @@ function TravelPlanning() {
                                             </Card.Title>
                                             <Card.Text style={{ marginBottom: '0.5rem' }}>
                                                 <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                                                    📅 {new Date(userTrip.startDate).toLocaleDateString('en-US', { 
-                                                        month: 'short', 
-                                                        day: 'numeric' 
-                                                    })} - {new Date(userTrip.endDate).toLocaleDateString('en-US', { 
-                                                        month: 'short', 
-                                                        day: 'numeric', 
-                                                        year: 'numeric' 
+                                                    📅 {new Date(userTrip.startDate).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })} - {new Date(userTrip.endDate).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric'
                                                     })}
                                                 </small><br />
                                                 <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                                                    👥 {userTrip.numberOfTravelers} traveler{userTrip.numberOfTravelers > 1 ? 's' : ''} • 
-                                                    📍 {tripDuration} day{tripDuration > 1 ? 's' : ''} • 
+                                                    👥 {userTrip.numberOfTravelers} traveler{userTrip.numberOfTravelers > 1 ? 's' : ''} •
+                                                    📍 {tripDuration} day{tripDuration > 1 ? 's' : ''} •
                                                     🗂️ {userTrip.status}
                                                 </small>
                                             </Card.Text>
-                                            <div style={{ 
-                                                marginTop: '1rem', 
-                                                padding: '0.5rem', 
-                                                backgroundColor: '#f8f9fa', 
+                                            <div style={{
+                                                marginTop: '1rem',
+                                                padding: '0.5rem',
+                                                backgroundColor: '#f8f9fa',
                                                 borderRadius: '8px',
                                                 border: '1px solid #e9ecef'
                                             }}>
@@ -260,15 +286,15 @@ function TravelPlanning() {
                     </div>
                 </Modal.Body>
                 <Modal.Footer style={{ borderTop: '1px solid #e0e0e0', padding: '1.5rem 2rem' }}>
-                    <Button 
+                    <Button
                         variant="outline-secondary"
                         onClick={() => setShowTripSelectModal(false)}
                         style={{ marginRight: '1rem' }}
                     >
                         Cancel
                     </Button>
-                    <Button 
-                        variant="primary" 
+                    <Button
+                        variant="primary"
                         onClick={() => navigate("/create-plan")}
                         style={{ background: '#457b9d', border: 'none' }}
                     >
@@ -293,8 +319,8 @@ function TravelPlanning() {
                                     Plan your daily adventures and make memories that last a lifetime
                                 </p>
                                 {userTrips.length > 1 && (
-                                    <Button 
-                                        variant="outline-primary" 
+                                    <Button
+                                        variant="outline-primary"
                                         size="sm"
                                         onClick={() => setShowTripSelectModal(true)}
                                         style={{ borderColor: '#457b9d', color: '#457b9d' }}
@@ -303,108 +329,108 @@ function TravelPlanning() {
                                     </Button>
                                 )}
                             </section>
-                            <div style={{ 
-                                backgroundColor: backgroundImage ? 'rgba(255, 255, 255, 0.95)' : 'white', 
-                                padding: "35px", 
+                            <div style={{
+                                backgroundColor: backgroundImage ? 'rgba(255, 255, 255, 0.95)' : 'white',
+                                padding: "35px",
                                 borderRadius: "15px",
                                 backdropFilter: backgroundImage ? 'blur(10px)' : 'none',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
                             }}>
                                 {days.length > 0 ? days.map((date, idx) => (
-                                <div key={date.toISOString()}>
-                                    <section className="mb-5">
-                                        <h3 style={{ color: '#457b9d', fontWeight: 600 }}>
-                                            Day {idx + 1} - {date.toLocaleDateString('en-US', { 
-                                                weekday: 'long', 
-                                                year: 'numeric', 
-                                                month: 'long', 
-                                                day: 'numeric' 
-                                            })}
-                                        </h3>
-                                        <div className="mt-3">
-                                            {/* Show day location if it exists from trip data */}
-                                            {trip && trip.dayLocations && trip.dayLocations[idx] && trip.dayLocations[idx].location ? (
-                                                <Card className="mb-4 w-100 shadow-sm border-0" style={{ backgroundColor: '#f8f9fa' }}>
-                                                    <Card.Body>
-                                                        <Card.Title style={{ color: '#457b9d' }}>
-                                                            📍 {trip.dayLocations[idx].location}
-                                                        </Card.Title>
-                                                        <Card.Text>
-                                                            {trip.dayLocations[idx].notes || "No additional notes yet."}
-                                                        </Card.Text>
-                                                    </Card.Body>
-                                                </Card>
-                                            ) : (
-                                                /* Show sample places for demonstration */
-                                                samplePlaces.map((place, i) => (
-                                                    <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
-                                                        <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
-                                                            <Card.Img
-                                                                variant="top"
-                                                                src={place.image}
-                                                                alt={place.name}
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '100%',
-                                                                    objectFit: 'cover',
-                                                                    maxHeight: 220,
-                                                                    filter: 'brightness(0.65)'
-                                                                }}
-                                                            />
-                                                            <div
-                                                                style={{
-                                                                    position: 'absolute',
-                                                                    top: 0,
-                                                                    left: 0,
-                                                                    width: '100%',
-                                                                    height: '100%',
-                                                                    color: 'white',
-                                                                    padding: '1.5rem',
-                                                                    display: 'flex',
-                                                                    flexDirection: 'column',
-                                                                    justifyContent: 'flex-end',
-                                                                    background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)'
-                                                                }}
-                                                            >
-                                                                <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{place.name}</Card.Title>
-                                                                <Card.Text style={{ fontSize: 16 }}>
-                                                                    <strong>Address:</strong> {place.address}<br />
-                                                                    <strong>Phone:</strong> {place.phone}<br />
-                                                                    <strong>Category:</strong> {place.category}
-                                                                </Card.Text>
-                                                            </div>
-                                                        </div>
+                                    <div key={date.toISOString()}>
+                                        <section className="mb-5">
+                                            <h3 style={{ color: '#457b9d', fontWeight: 600 }}>
+                                                Day {idx + 1} - {date.toLocaleDateString('en-US', {
+                                                    weekday: 'long',
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}
+                                            </h3>
+                                            <div className="mt-3">
+                                                {/* Show day location if it exists from trip data */}
+                                                {trip && trip.dayLocations && trip.dayLocations[idx] && trip.dayLocations[idx].location ? (
+                                                    <Card className="mb-4 w-100 shadow-sm border-0" style={{ backgroundColor: '#f8f9fa' }}>
+                                                        <Card.Body>
+                                                            <Card.Title style={{ color: '#457b9d' }}>
+                                                                📍 {trip.dayLocations[idx].location}
+                                                            </Card.Title>
+                                                            <Card.Text>
+                                                                {trip.dayLocations[idx].notes || "No additional notes yet."}
+                                                            </Card.Text>
+                                                        </Card.Body>
                                                     </Card>
-                                                ))
-                                            )}
-                                        </div>
-                                    </section>
-                                    {/* Add button section */}
-                                    <section className="mb-5">
-                                        <div className="d-flex justify-content-center align-items-center" style={{ height: 180, background: '#f1f8ff', borderRadius: '0.5rem', border: '2px dashed #bcdff1' }}>
-                                            <button
-                                                style={{
-                                                    border: 'none',
-                                                    background: '#457b9d',
-                                                    color: 'white',
-                                                    borderRadius: '50%',
-                                                    width: 60,
-                                                    height: 60,
-                                                    fontSize: 36,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    boxShadow: '0 2px 8px rgba(69,123,157,0.15)',
-                                                    cursor: 'pointer'
-                                                }}
-                                                aria-label="Add new travel section"
-                                                onClick={() => setModalShow(true)}
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    </section>
-                                </div>
+                                                ) : (
+                                                    /* Show dummyBusiness for demonstration */
+                                                    dummyBusiness.map((biz, i) => (
+                                                        <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
+                                                            <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
+                                                                <Card.Img
+                                                                    variant="top"
+                                                                    src={biz.images && biz.images[0]}
+                                                                    alt={biz.name}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        height: '100%',
+                                                                        objectFit: 'cover',
+                                                                        maxHeight: 220,
+                                                                        filter: 'brightness(0.65)'
+                                                                    }}
+                                                                />
+                                                                <div
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        top: 0,
+                                                                        left: 0,
+                                                                        width: '100%',
+                                                                        height: '100%',
+                                                                        color: 'white',
+                                                                        padding: '1.5rem',
+                                                                        display: 'flex',
+                                                                        flexDirection: 'column',
+                                                                        justifyContent: 'flex-end',
+                                                                        background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 100%)'
+                                                                    }}
+                                                                >
+                                                                    <Card.Title style={{ fontSize: 24, fontWeight: 700 }}>{biz.name}</Card.Title>
+                                                                    <Card.Text style={{ fontSize: 16 }}>
+                                                                        <strong>Address:</strong> {biz.address || 'N/A'}<br />
+                                                                        <strong>Phone:</strong> {biz.phone || 'N/A'}<br />
+                                                                        <strong>Category:</strong> {Array.isArray(biz.categories) ? biz.categories.join(', ') : biz.categories || 'N/A'}
+                                                                    </Card.Text>
+                                                                </div>
+                                                            </div>
+                                                        </Card>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </section>
+                                        {/* Add button section */}
+                                        <section className="mb-5">
+                                            <div className="d-flex justify-content-center align-items-center" style={{ height: 180, background: '#f1f8ff', borderRadius: '0.5rem', border: '2px dashed #bcdff1' }}>
+                                                <button
+                                                    style={{
+                                                        border: 'none',
+                                                        background: '#457b9d',
+                                                        color: 'white',
+                                                        borderRadius: '50%',
+                                                        width: 60,
+                                                        height: 60,
+                                                        fontSize: 36,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        boxShadow: '0 2px 8px rgba(69,123,157,0.15)',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                    aria-label="Add new travel section"
+                                                    onClick={() => setModalShow(true)}
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        </section>
+                                    </div>
                                 )) : (
                                     <div className="text-center py-5">
                                         <h4 style={{ color: '#6c757d' }}>Loading your travel plan...</h4>
