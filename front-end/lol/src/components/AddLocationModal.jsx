@@ -62,8 +62,8 @@ function AddLocationModal(props) {
     };
 
     function addToTrip(location) {
-        if (props.onAddToTrip) {
-            props.onAddToTrip(location);
+        if (props.onaddtotrip) {
+            props.onaddtotrip(location);
         }
     }
 

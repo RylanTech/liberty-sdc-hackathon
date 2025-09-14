@@ -331,7 +331,7 @@ function TravelPlanning() {
                 defaultDestination={destination}
                 tripId={trip?.id}
                 dayNumber={currentDay}
-                onAddToTrip={async (location) => {
+                onaddtotrip={async (location) => {
                     // Handle adding location to trip
                     console.log('Adding location to trip:', location, 'Day:', currentDay);
                     console.log('Trip ID:', trip?.id);
@@ -555,21 +555,14 @@ function TravelPlanning() {
                                                 })}
                                             </h3>
                                             <div className="mt-3">
-                                                {/* Show day location if it exists from trip data */}
-                                                {trip && trip.dayLocations && trip.dayLocations[idx] && trip.dayLocations[idx].location ? (
                                                     <Card className="mb-4 w-100 shadow-sm border-0" style={{ backgroundColor: '#f8f9fa' }}>
                                                         <Card.Body>
                                                             <Card.Title style={{ color: '#457b9d' }}>
                                                                 📍 {trip.dayLocations[idx].location}
                                                             </Card.Title>
-                                                            <Card.Text>
-                                                                {trip.dayLocations[idx].notes || "No additional notes yet."}
-                                                            </Card.Text>
                                                         </Card.Body>
                                                     </Card>
-                                                ) : (
-                                                    /* Show saved activities for this day */
-                                                    dayActivities[idx + 1] && dayActivities[idx + 1].length > 0 ? (
+                                                    {dayActivities[idx + 1] && dayActivities[idx + 1].length > 0 ? (
                                                         dayActivities[idx + 1].map((activity, i) => (
                                                             <Card className="mb-4 w-100 shadow-sm border-0 position-relative overflow-hidden" key={i} style={{ maxHeight: 280 }}>
                                                                 <div style={{ position: 'relative', width: '100%', height: 220, overflow: 'hidden' }}>
@@ -616,7 +609,7 @@ function TravelPlanning() {
                                                             <p><small>Click the + button below to add some!</small></p>
                                                         </div>
                                                     )
-                                                )}
+                                                }
                                             </div>
                                         </section>
                                         {/* Add button section */}

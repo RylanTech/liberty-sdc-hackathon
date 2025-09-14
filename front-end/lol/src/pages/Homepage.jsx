@@ -13,8 +13,7 @@ function Homepage() {
                             Discover, organize, and book your dream trips with Traveler. Your journey starts here—explore destinations, create itineraries, and travel smarter.
                         </p>
                         <div>
-                            <a href="/create-plan" className="btn btn-primary btn-lg mt-3 me-3" style={{ background: '#457b9d', border: 'none' }}>Start Planning</a>
-                            <a href="#features" className="btn btn-outline-primary btn-lg mt-3" style={{ borderColor: '#457b9d', color: '#457b9d' }}>Learn More</a>
+                            <a href="/sign-in" className="btn btn-primary btn-lg mt-3 me-3" style={{ background: '#457b9d', border: 'none' }}>Start Planning</a>
                         </div>
                     </section>
                     
@@ -49,7 +48,7 @@ function Homepage() {
                                             <p style={{ marginBottom: '1rem', opacity: 0.9 }}>
                                                 Discover ancient temples, bustling cities, and stunning landscapes across Asia's diverse countries.
                                             </p>
-                                            <a href="/create-plan" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            <a href="/sign-in" className="btn btn-light btn-sm">Plan Your Trip</a>
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +80,7 @@ function Homepage() {
                                             <p style={{ marginBottom: '1rem', opacity: 0.9 }}>
                                                 From vibrant cities to natural wonders, experience the diversity of North America.
                                             </p>
-                                            <a href="/create-plan" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            <a href="/sign-in" className="btn btn-light btn-sm">Plan Your Trip</a>
                                         </div>
                                     </div>
                                 </div>

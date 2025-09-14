@@ -19,9 +19,10 @@ function Header() {
                 <Navbar.Collapse id="main-navbar-nav">
                     <Nav className="ms-auto">
                         <Link className='btn' to={"/"} style={{ fontWeight: 500 }}>Home</Link>
-                        <Link className='btn' to={"/create-plan"} style={{ fontWeight: 500 }}>Create a plan</Link>
                         
                         {isAuthenticated ? (
+                            <>
+                            <Link className='btn' to={"/create-plan"} style={{ fontWeight: 500 }}>Create a plan</Link>
                             <Dropdown align="end">
                                 <Dropdown.Toggle 
                                     variant="outline-primary" 
@@ -49,6 +50,7 @@ function Header() {
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
+                            </>
                         ) : (
                             <>
                                 <Link className='btn btn-primary' to={"/sign-up"} style={{ fontWeight: 500 }}>Sign Up</Link>
