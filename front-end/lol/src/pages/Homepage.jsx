@@ -1,7 +1,12 @@
 import { Container } from "react-bootstrap"
 import Header from "../components/Header"
+import { useAuth } from "../context/AuthContext";
 
 function Homepage() {
+
+    const { isAuthenticated } = useAuth();
+
+
     return (
         <>
             <Header />
@@ -13,10 +18,14 @@ function Homepage() {
                             Discover, organize, and book your dream trips with Traveler. Your journey starts here—explore destinations, create itineraries, and travel smarter.
                         </p>
                         <div>
-                            <a href="/sign-in" className="btn btn-primary btn-lg mt-3 me-3" style={{ background: '#457b9d', border: 'none' }}>Start Planning</a>
+                            {isAuthenticated ? (
+                                <a href="/create-plan" className="btn btn-primary btn-lg mt-3 me-3" style={{ background: '#457b9d', border: 'none' }}>Start Planning</a>
+                            ) : (
+                                <a href="/sign-in" className="btn btn-primary btn-lg mt-3 me-3" style={{ background: '#457b9d', border: 'none' }}>Start Planning</a>
+                            )}
                         </div>
                     </section>
-                    
+
                     {/* Popular Destinations Section */}
                     <section className="mb-5">
                         <h2 className="text-center mb-4" style={{ color: '#2d3a4b', fontWeight: 600 }}>Popular Destinations</h2>
@@ -24,9 +33,9 @@ function Homepage() {
                             <div className="col-md-6 mb-4">
                                 <div className="card border-0 shadow-lg overflow-hidden" style={{ borderRadius: '15px' }}>
                                     <div style={{ position: 'relative', height: '300px', overflow: 'hidden' }}>
-                                        <img 
-                                            src="/images/asia.jpg" 
-                                            alt="Asia Destinations" 
+                                        <img
+                                            src="/images/asia.jpg"
+                                            alt="Asia Destinations"
                                             style={{
                                                 width: '100%',
                                                 height: '100%',
@@ -48,7 +57,11 @@ function Homepage() {
                                             <p style={{ marginBottom: '1rem', opacity: 0.9 }}>
                                                 Discover ancient temples, bustling cities, and stunning landscapes across Asia's diverse countries.
                                             </p>
-                                            <a href="/sign-in" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            {isAuthenticated ? (
+                                                <a href="/create-plan" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            ) : (
+                                                <a href="/sign-in" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -56,9 +69,9 @@ function Homepage() {
                             <div className="col-md-6 mb-4">
                                 <div className="card border-0 shadow-lg overflow-hidden" style={{ borderRadius: '15px' }}>
                                     <div style={{ position: 'relative', height: '300px', overflow: 'hidden' }}>
-                                        <img 
-                                            src="/images/north-america.jpg" 
-                                            alt="North America Destinations" 
+                                        <img
+                                            src="/images/north-america.jpg"
+                                            alt="North America Destinations"
                                             style={{
                                                 width: '100%',
                                                 height: '100%',
@@ -80,7 +93,11 @@ function Homepage() {
                                             <p style={{ marginBottom: '1rem', opacity: 0.9 }}>
                                                 From vibrant cities to natural wonders, experience the diversity of North America.
                                             </p>
-                                            <a href="/sign-in" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            {isAuthenticated ? (
+                                                <a href="/create-plan" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            ) : (
+                                                <a href="/sign-in" className="btn btn-light btn-sm">Plan Your Trip</a>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +136,11 @@ function Homepage() {
                     </section>
                     <section className="text-center mt-5">
                         <h2 style={{ color: '#2d3a4b', fontWeight: 600 }}>Ready to start your journey?</h2>
-                        <a href="/sign-up" className="btn btn-success btn-lg mt-3" style={{ background: '#1abc9c', border: 'none' }}>Sign Up Now</a>
+                        {isAuthenticated ? (
+                            <a href="/create-plan" className="btn btn-success btn-lg mt-3" style={{ background: '#1abc9c', border: 'none' }}>Start Now!</a>
+                        ) : (
+                            <a href="/sign-up" className="btn btn-success btn-lg mt-3" style={{ background: '#1abc9c', border: 'none' }}>Sign Up Now</a>
+                        )}
                     </section>
                 </Container>
             </main>
