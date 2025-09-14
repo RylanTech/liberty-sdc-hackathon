@@ -45,17 +45,17 @@ function CreatePlan() {
             try {
                 const googleOptions = {
                     method: 'GET',
-                    url: 'https://google-api35.p.rapidapi.com/google/images',
+                    url: 'https://google-search-master.p.rapidapi.com/images',
                     params: {
-                        query: `${destinationName} travel destination`,
+                        q: `${destinationName} travel destination`,
                         page: 1,
-                        timeframe: 'Any',
                         countryCode: 'gb',
-                        responseLanguage: 'en'
+                        gl: 'us',
+                        hl: 'en'
                     },
                     headers: {
                         'x-rapidapi-key': import.meta.env.VITE_GOOGLE_SEARCH_API,
-                        'x-rapidapi-host': 'google-api35.p.rapidapi.com'
+                        'x-rapidapi-host': 'google-search-master.p.rapidapi.com'
                     }
                 };
 
